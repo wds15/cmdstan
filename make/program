@@ -24,10 +24,10 @@ $(STAN_TARGETS) examples/bernoulli/bernoulli$(EXE) $(patsubst %.stan,%$(EXE),$(w
 endif
 
 
-%.hpp : %.stan bin/stanc$(EXE)
+%.hpp : %.stan $(STANC)
 	@echo ''
 	@echo '--- Translating Stan model to C++ code ---'
-	$(WINE) bin/stanc$(EXE) $(STANCFLAGS) --o=$@ $<
+	$(WINE) $(STANC) $(STANCFLAGS) --o=$@ $<
 
 
 .PRECIOUS: %.hpp
@@ -43,7 +43,6 @@ endif
 ifneq (,$(STAN_TARGETS))
 $(patsubst %$(EXE),%.d,$(STAN_TARGETS)) : DEPTARGETS += -MT $(patsubst %.d,%$(EXE),$@) -include $< -include $(CMDSTAN_MAIN)
 -include $(patsubst %$(EXE),%.d,$(STAN_TARGETS))
--include src/cmdstan/stanc.d
 -include $(patsubst %.cpp,%.d,$(STANC_TEMPLATE_INSTANTIATION_CPP))
 ifeq ($(CXX_TYPE),clang)
 -include $(STAN)src/stan/model/model_header.d
