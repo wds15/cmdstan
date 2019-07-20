@@ -1,21 +1,23 @@
+#! /bin/env Rscript
+
 library(dplyr)
 library(ggplot2)
 library(rstan)
 library(readr)
 theme_set(theme_bw(10))
 
+binary  <- "./poisson-hierarchical-scale"
 
-if(FALSE) {
-    ## execute once
+
+if(!file.exists(binary)) {
+    ## executed once
     ## possibly adapt to your compiler (note that make/local is wiped out)
-    cat("CXX=clang++\n", file="../../make/local", append=FALSE)
-    cat("CXXFLAGS+=-DSTAN_THREADS\n", file="../../make/local", append=TRUE)
+    cat("CXXFLAGS+=-DSTAN_THREADS\n", file="../../make/local", append=FALSE)
+    cat("CXX=clang++\n", file="../../make/local", append=TRUE)
     cat("STANCFLAGS=--allow_undefined\n", file="../../make/local", append=TRUE)
     system("cd ../..; make -j6 build")
     system("cd ../..; make examples/poisson-bench/poisson-hierarchical-scale")
 }
-
-binary  <- "./poisson-hierarchical-scale"
 
 reduce_sum_timing <- function(threads, groups, terms, method, grainsize=0) {
     pars <-  as.integer(c(threads, groups, terms, method, grainsize))
