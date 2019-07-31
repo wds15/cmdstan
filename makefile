@@ -154,6 +154,10 @@ build-mpi: $(MPI_TARGETS)
 build: bin/stanc$(EXE) bin/stansummary$(EXE) bin/print$(EXE) bin/diagnose$(EXE) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	@echo ''
 	@echo '--- CmdStan v$(CMDSTAN_VERSION) built ---'
+	@if [ "$(OS)" == "Windows_NT" ]; then \
+		echo 'Please add $(TBB_ABSOLUTE_PATH)\lib to your PATH variable.';\
+	fi
+		
 
 ifeq ($(CXX_TYPE),clang)
 build: $(STAN)src/stan/model/model_header.hpp.gch

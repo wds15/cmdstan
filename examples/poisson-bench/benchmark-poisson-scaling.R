@@ -43,7 +43,7 @@ reduce_sum_timing(2, 10L, 10L, 0)
 bench <- expand.grid(threads=c(1,2,4,6), groups=c(1,5) * 100, terms=c(50, 100),
                      grainfrac=c(0))
 
-bench <- expand.grid(threads=c(1,2,4,6), groups=c(5) * 100, terms=c(50), method=0:3,
+bench <- expand.grid(threads=c(1,2,4,6,8,12), groups=c(5) * 100, terms=c(50), method=0:3,
                      grainfrac=c(0))
 
 bench  <- bench %>% mutate(grainsize=as.integer(groups * terms * grainfrac)) %>%
@@ -82,9 +82,9 @@ ggplot(benchPl, aes(threads, method_speedup, colour=method_label, shape=method_l
     ggtitle("Speedup vs 1 core of hierarchical Poisson likelihood reduce", "Each curve shows method specific speedup relative to 1 core of respective method") +
     ylab("Speedup vs 1 core") +
     xlab("Threads") +
-    scale_x_log10(breaks=c(1, 2, 4, 6)) +
-    scale_y_log10(breaks=c(1, 2, 3, 4, 5, 6)) +
-    coord_fixed(xlim=c(1,6), ylim=c(1,6)) +
+    scale_x_log10(breaks=c(1, 2, 4, 6, 8, 12)) +
+    scale_y_log10(breaks=c(1, 2, 3, 4, 5, 6, 8, 12)) +
+    coord_fixed(xlim=c(1,12), ylim=c(1,12)) +
     theme(legend.position=c(0.2,0.825))
 
 ggsave(paste0(prefix, "-method-relative-scale-poisson-static.png"), width=6, height=7, dpi=120)
@@ -95,10 +95,21 @@ ggplot(benchPl, aes(threads, serial_speedup, colour=method_label, shape=method_l
     ggtitle("Speedup vs 1 core of hierarchical Poisson likelihood reduce", "Each curve shows speedup relative to 1 core of serial method") +
     ylab("Speedup vs 1 core") +
     xlab("Threads") +
-    scale_x_log10(breaks=c(1, 2, 4, 6)) +
-    scale_y_log10(breaks=c(1, 2, 3, 4, 5, 6)) +
-    coord_fixed(xlim=c(1,6), ylim=c(1,6)) +
+    scale_x_log10(breaks=c(1, 2, 4, 6, 8, 12)) +
+    scale_y_log10(breaks=c(1, 2, 3, 4, 5, 6, 8, 12)) +
+    coord_fixed(xlim=c(1,12), ylim=c(1,12)) +
     theme(legend.position=c(0.2,0.825))
 
 ggsave(paste0(prefix, "-method-serial-scale-poisson-static.png"), width=6, height=7, dpi=120)
 
+
+library(readr)
+
+steve  <- read_csv("~/Downloads/bench-2019-07-30_16-36.csv")
+
+cmp  <- steve %>% filter(threads%in%c(1,16), method_label=="TBB map") %>% mutate(runtime_h=runtime/60/60)
+
+names(cmp)
+
+library(knitr)
+kable(cmp[c("label", "runtime_h")])
